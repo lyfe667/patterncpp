@@ -1,4 +1,5 @@
 #include<iostream>
+#include<memory>
 using namespace std;
 
 class CPU{
@@ -42,50 +43,44 @@ public:
 //abstract factory
 class ComputerAccessoryFactory{
 public:
-	virtual CPU * createCPU()=0;
-	virtual Memory * createMemory()=0;
+	virtual shared_ptr<CPU> createCPU()=0;
+	virtual shared_ptr<Memory> createMemory()=0;
 };
 
 //factory
 class HighConfigComputerAccessoryFactory: public ComputerAccessoryFactory{
 public:
-	CPU * createCPU(){
-		return new FastCPU();
+	shared_ptr<CPU> createCPU(){
+		return shared_ptr<FastCPU>(new FastCPU());
 	}
-	Memory * createMemory(){
-		return new BigMemory();
+	shared_ptr<Memory> createMemory(){
+		return shared_ptr<BigMemory>(new BigMemory());
 	}
 };
 
 class LowConfigComputerAccessoryFactory: public ComputerAccessoryFactory{
 public:
-	CPU * createCPU(){
-		return new SlowCPU();
+	shared_ptr<CPU> createCPU(){
+		return shared_ptr<SlowCPU>(new SlowCPU());
 	}
-	Memory * createMemory(){
-		return new SmallMemory();
+	shared_ptr<Memory> createMemory(){
+		return shared_ptr<SmallMemory>(new SmallMemory());
 	}
 };
 
 class Computer{
 private:
-	CPU * cpu_;
-	Memory * memory_;
+	shared_ptr<CPU> cpu_;
+	shared_ptr<Memory> memory_;
 
 public:
-	Computer(CPU *cpu,Memory *memory)
+	Computer(shared_ptr<CPU> cpu,shared_ptr<Memory> memory)
 		:cpu_(cpu),memory_(memory)
 	{
 
 	}
 
 	~Computer(){
-		if(cpu_){
-			delete cpu_;
-		}
-		if(memory_){
-			delete memory_;
-		}
 	}
 public:
 	void showConfiguration(){
@@ -95,25 +90,17 @@ public:
 
 };
 
-Computer *assembleComputer(ComputerAccessoryFactory * caf){
-	return new Computer(caf->createCPU(),caf->createMemory());
+shared_ptr<Computer> assembleComputer(const shared_ptr<ComputerAccessoryFactory> &caf){
+	return shared_ptr<Computer>(new Computer(caf->createCPU(),caf->createMemory()));
 }
 
 
 int main(){
-	HighConfigComputerAccessoryFactory hccaf;
 	LowConfigComputerAccessoryFactory lccaf;
-	Computer *hcc = assembleComputer(&hccaf);
-	Computer *lcc = assembleComputer(&lccaf);
+	shared_ptr<Computer> hcc = assembleComputer(make_shared<HighConfigComputerAccessoryFactory>());
+	shared_ptr<Computer> lcc = assembleComputer(make_shared<LowConfigComputerAccessoryFactory>());
 	hcc->showConfiguration();
 	lcc->showConfiguration();
 	
-	if(hcc){
-		delete hcc;
-	}
-	
-	if(lcc){
-		delete lcc;
-	}
 	return 0;
 }
