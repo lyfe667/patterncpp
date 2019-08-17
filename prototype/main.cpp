@@ -44,7 +44,7 @@ public:
 		cout<<(*legs)[3]<<endl;
 		cout<<"************"<<endl;
 	}
-
+//		实现深拷贝
 	virtual shared_ptr<Cloneable> clone(){
 		shared_ptr<Sheep> clonedSheep(new Sheep());
 		clonedSheep->setLeg(0,(*legs)[0]);
