@@ -25,8 +25,9 @@ public:
 
 	// Lambda表达式(匿名函数)的写法：[捕获列表](参数列表)-> 返回类型{函数体}
 	void removeChild(int id){
-		remove_if(childs_.begin(), childs_.end(), 
-				[id](const shared_ptr<INode> &node)->bool{ return node->getId()==id; });
+		//remove_if 并不会真正改变vector大小，需要调用erase函数删除
+		childs_.erase(remove_if(childs_.begin(), childs_.end(), 
+				[id](const shared_ptr<INode> &node)->bool{ return node->getId()==id; }), childs_.end());
 	}
 
 	virtual void operate()=0;
@@ -78,6 +79,9 @@ int main(){
 	nodes[1]->operate();
 	cout<<endl;
 	nodes[2]->operate();
+	cout<<endl;
+	nodes[3]->removeChild(7);
+	nodes[3]->operate();
 	cout<<endl;
 
 	return 0;

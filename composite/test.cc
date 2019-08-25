@@ -2,6 +2,10 @@
 #include<memory>
 using namespace std;
 
+string hello(){
+	return "hello";
+}
+
 int main(){
 	int *p=new int(10);
 	shared_ptr<int> ps0(p);
@@ -15,5 +19,14 @@ int main(){
 //	cout<<ps2.use_count()<<endl;
 	cout<<*ps0<<endl;
 //	cout<<*ps2<<endl;
+
+	string a="hello world!";
+	string &&b=hello();
+
+	cout<<a<<endl;
+	cout<<b<<endl;
+
+
+
 	return 0;
 }
